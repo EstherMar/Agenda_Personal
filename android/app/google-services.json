@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "276780238123",
+    "firebase_url": "https://agenda-personal-904bf.firebaseio.com",
+    "project_id": "agenda-personal-904bf",
+    "storage_bucket": "agenda-personal-904bf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:276780238123:android:da7e8578fdec5418aeb16e",
+        "android_client_info": {
+          "package_name": "com.example.miagendapersonal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "276780238123-0d0prj1oa75jailejqggla81qse0opb4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgUCNAJY1PDBDHt6GVcMv-60S_g2S6ByY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "276780238123-0d0prj1oa75jailejqggla81qse0opb4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
