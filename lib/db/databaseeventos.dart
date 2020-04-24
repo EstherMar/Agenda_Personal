@@ -42,6 +42,13 @@ class EventosDatabaseProvider{
     return list;
   }
 
+  Future<List<classevento>> getAllFechareal() async {
+    final db = await database;
+    var response = await db.rawQuery("SELECT fechareal FROM eventos");
+    List<classevento> list = response.map((c) => classevento.fromMap(c)).toList();
+    return list;
+  }
+
   Future<List<classevento>> getEventosWithFecha(String fecha) async {
     final db = await database;
     var response = await db.query("eventos", where: "fecha = ?", whereArgs: [fecha]);

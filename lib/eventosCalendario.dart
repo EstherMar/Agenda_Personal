@@ -149,6 +149,21 @@ class _eventosCalendarioState extends State<eventosCalendario> with TickerProvid
                             ),),
                           startingDayOfWeek: StartingDayOfWeek.monday,
                           onDaySelected: _onDaySelected,
+                          builders: CalendarBuilders(
+                            markersBuilder: (context, date, events, holidays) {
+                              final children = <Widget>[];
+                              if (_events.isNotEmpty) {
+                                children.add(
+                                  Positioned(
+                                    right: 1,
+                                    bottom: 1,
+                                    child: _buildEventsMarker(date, events),
+                                  ),
+                                );
+                              }
+                              return children;
+                            },
+                          ),
                           calendarController: _calendarController,),
                       ),
                     ],
@@ -179,9 +194,20 @@ class _eventosCalendarioState extends State<eventosCalendario> with TickerProvid
                           itemBuilder: (BuildContext context, int index) {
                             classevento item = snapshot.data[index];
                             var entrada = DateTime.parse(item.fechareal);
+                            var entrada2 = DateTime.now();
+                            print ("fecha calendario");
+                            print (entrada);
+                            print ("fecha real");
+                            print (entrada2);
                             _events =  {
                               entrada: [snapshot.data.length],
+                              entrada2: []
                             };
+                            _animationController = AnimationController(
+                            vsync: this,
+                            duration: const Duration(milliseconds: 400),
+                            );
+                            _animationController.forward();
                             return Padding(
                               padding: const EdgeInsets.all(20.0),
                               child: Container(
@@ -433,6 +459,14 @@ class _eventosCalendarioState extends State<eventosCalendario> with TickerProvid
       fontSize: 25,
       fontWeight: FontWeight.bold,
       color: Colors.white
+  );
+}
+
+Widget _buildEventsMarker(DateTime date, List events) {
+  return Icon(
+    Icons.add_box,
+    size: 20.0,
+    color: Colors.blueGrey[800],
   );
 }
 
