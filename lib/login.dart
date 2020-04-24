@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/widgets.dart';
 import 'package:miagendapersonal/db//registration_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,180 +26,193 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Firebase Email Login'),
-      ),
       body: Center(
-          child: Column(
-            children: [
-              Card(
-                child: Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Form(
-                        key: _formStateKey,
-                        autovalidate: true,
-                        child: Column(
-                          children: <Widget>[
-                            Padding(
-                              padding:
-                              EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                              child: TextFormField(
-                                validator: validateEmail,
-                                onSaved: (value) {
-                                  _emailId = value;
-                                },
-                                keyboardType: TextInputType.emailAddress,
-                                controller: _emailIdController,
-                                decoration: InputDecoration(
-                                  focusedBorder: new UnderlineInputBorder(
-                                    borderSide: new BorderSide(
-                                        color: Colors.green,
-                                        width: 2,
-                                        style: BorderStyle.solid),
-                                  ),
-                                  labelText: "Email Id",
-                                  icon: Icon(
-                                    Icons.email,
-                                    color: Colors.green,
-                                  ),
-                                  fillColor: Colors.white,
-                                  labelStyle: TextStyle(
-                                    color: Colors.green,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                              EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                              child: TextFormField(
-                                validator: validatePassword,
-                                onSaved: (value) {
-                                  _password = value;
-                                },
-                                controller: _passwordController,
-                                obscureText: true,
-                                decoration: InputDecoration(
-                                  focusedBorder: new UnderlineInputBorder(
+          child: Container(
+            height: double.infinity,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.teal[600],
+                  Colors.teal[700],
+                  Colors.teal[800],
+                  Colors.teal[900],
+                ],
+                stops: [0.1, 0.4, 0.7, 0.9],
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      children: <Widget>[
+                        Form(
+                          key: _formStateKey,
+                          autovalidate: true,
+                          child: Column(
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
+                                child: TextFormField(
+                                  validator: validateEmail,
+                                  onSaved: (value) {
+                                    _emailId = value;
+                                  },
+                                  keyboardType: TextInputType.emailAddress,
+                                  controller: _emailIdController,
+                                  decoration: InputDecoration(
+                                    focusedBorder: new UnderlineInputBorder(
                                       borderSide: new BorderSide(
                                           color: Colors.green,
                                           width: 2,
-                                          style: BorderStyle.solid)),
-                                  labelText: "Password",
-                                  icon: Icon(
-                                    Icons.lock,
+                                          style: BorderStyle.solid),
+                                    ),
+                                    labelText: "Email",
+                                    icon: Icon(
+                                      Icons.email,
+                                      color: Colors.green,
+                                    ),
+                                    fillColor: Colors.white,
+                                    labelStyle: TextStyle(
+                                      color: Colors.green,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                EdgeInsets.only(left: 10, right: 10, bottom: 5),
+                                child: TextFormField(
+                                  validator: validatePassword,
+                                  onSaved: (value) {
+                                    _password = value;
+                                  },
+                                  controller: _passwordController,
+                                  obscureText: true,
+                                  decoration: InputDecoration(
+                                    focusedBorder: new UnderlineInputBorder(
+                                        borderSide: new BorderSide(
+                                            color: Colors.green,
+                                            width: 2,
+                                            style: BorderStyle.solid)),
+                                    labelText: "Contraseña",
+                                    icon: Icon(
+                                      Icons.lock,
+                                      color: Colors.green,
+                                    ),
+                                    fillColor: Colors.white,
+                                    labelStyle: TextStyle(
+                                      color: Colors.green,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        (errorMessage != ''
+                            ? Text(
+                          errorMessage,
+                          style: TextStyle(color: Colors.red),
+                        )
+                            : Container()),
+                        // ignore: deprecated_member_use
+                        ButtonTheme.bar(
+                          child: ButtonBar(
+                            children: <Widget>[
+                              FlatButton(
+                                child: Text(
+                                  'Entrar',
+                                  style: TextStyle(
+                                    fontSize: 18,
                                     color: Colors.green,
                                   ),
-                                  fillColor: Colors.white,
-                                  labelStyle: TextStyle(
+                                ),
+                                onPressed: () {
+                                  if (_formStateKey.currentState.validate()) {
+                                    _formStateKey.currentState.save();
+                                    signIn(_emailId, _password).then((user) {
+                                      if (user != null) {
+                                        print('Conexión satisfactoria');
+                                        setState(() {
+                                          successMessage =
+                                          'Conexión establecida.\n';
+                                        });
+                                      } else {
+                                        print('Ha surgido un error');
+                                      }
+                                    });
+                                  }
+                                },
+                              ),
+                              FlatButton(
+                                child: Text(
+                                  'Crear cuenta',
+                                  style: TextStyle(
+                                    fontSize: 12,
                                     color: Colors.green,
                                   ),
                                 ),
+                                onPressed: () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    new MaterialPageRoute(
+                                      builder: (context) => RegistrationPage(),
+                                    ),
+                                  );
+                                },
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      (errorMessage != ''
-                          ? Text(
-                        errorMessage,
-                        style: TextStyle(color: Colors.red),
-                      )
-                          : Container()),
-                      ButtonTheme.bar(
-                        child: ButtonBar(
-                          children: <Widget>[
-                            FlatButton(
-                              child: Text(
-                                'LOGIN',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.green,
-                                ),
-                              ),
-                              onPressed: () {
-                                if (_formStateKey.currentState.validate()) {
-                                  _formStateKey.currentState.save();
-                                  signIn(_emailId, _password).then((user) {
-                                    if (user != null) {
-                                      print('Logged in successfully.');
-                                      setState(() {
-                                        successMessage =
-                                        'Logged in successfully.\nYou can now navigate to Home Page.';
-                                      });
-                                    } else {
-                                      print('Error while Login.');
-                                    }
-                                  });
-                                }
-                              },
-                            ),
-                            FlatButton(
-                              child: Text(
-                                'Get Register',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.green,
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  new MaterialPageRoute(
-                                    builder: (context) => RegistrationPage(),
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              (successMessage != ''
-                  ? Text(
-                successMessage,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18, color: Colors.green),
-              )
-                  : Container()),
-              (!isGoogleSignIn
-                  ? RaisedButton(
-                child: Text('Google Login'),
-                onPressed: () {
-                  googleSignin(context).then((user) {
-                    if (user != null) {
-                      print('Logged in successfully.');
-                      setState(() {
-                        isGoogleSignIn = true;
-                        successMessage =
-                        'Logged in successfully.\nEmail : ${user.email}\nYou can now navigate to Home Page.';
-                      });
-                    } else {
-                      print('Error while Login.');
-                    }
-                  });
-                },
-              )
-                  : RaisedButton(
-                child: Text('Google Logout'),
-                onPressed: () {
-                  googleSignout().then((response) {
-                    if (response) {
-                      setState(() {
-                        isGoogleSignIn = false;
-                        successMessage = '';
-                      });
-                    }
-                  });
-                },
-              )),
-            ],
+                (successMessage != ''
+                    ? Text(
+                  successMessage,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, color: Colors.green),
+                )
+                    : Container()),
+                (!isGoogleSignIn
+                    ? RaisedButton(
+                  child: Text('Entrar con Google'),
+                  onPressed: () {
+                    googleSignin(context).then((user) {
+                      if (user != null) {
+                        print('Conectado correctamente');
+                        setState(() {
+                          isGoogleSignIn = true;
+                          successMessage =
+                          'Conectado correctamente.\nEmail : ${user.email}\n ';
+                        });
+                      } else {
+                        print('Ha surgido un error en la autentificación');
+                      }
+                    });
+                  },
+                ): RaisedButton(
+                  child: Text('Google Logout'),
+                  onPressed: () {
+                    googleSignout().then((response) {
+                      if (response) {
+                        setState(() {
+                          isGoogleSignIn = false;
+                          successMessage = '';
+                        });
+                      }
+                    });
+                  },
+                )),
+              ],
+            ),
           )),
     );
   }
@@ -240,7 +254,7 @@ class _LoginScreenState extends State<LoginScreen> {
       currentUser = await auth.currentUser();
       assert(user.uid == currentUser.uid);
       print(currentUser);
-      print("User Name  : ${currentUser.displayName}");
+      print("Nombre de usuario : ${currentUser.displayName}");
     } catch (e) {
       handleError(e);
     }
@@ -258,12 +272,12 @@ class _LoginScreenState extends State<LoginScreen> {
     switch (error.code) {
       case 'ERROR_USER_NOT_FOUND':
         setState(() {
-          errorMessage = 'User Not Found!!!';
+          errorMessage = 'Usuario no registrado!!!';
         });
         break;
       case 'ERROR_WRONG_PASSWORD':
         setState(() {
-          errorMessage = 'Wrong Password!!!';
+          errorMessage = 'Contraseña erronea!!!';
         });
         break;
     }
@@ -274,14 +288,14 @@ class _LoginScreenState extends State<LoginScreen> {
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = new RegExp(pattern);
     if (value.isEmpty || !regex.hasMatch(value))
-      return 'Enter Valid Email Id!!!';
+      return 'Introduce un correo válido!!!';
     else
       return null;
   }
 
   String validatePassword(String value) {
     if (value.trim().isEmpty) {
-      return 'Password is empty!!!';
+      return 'Debes introducir tu contraseña!!!';
     }
     return null;
   }
