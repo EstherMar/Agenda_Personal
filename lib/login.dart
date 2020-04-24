@@ -1,302 +1,226 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/widgets.dart';
-import 'package:miagendapersonal/db//registration_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:miagendapersonal/crearcuenta.dart';
+
+final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class LoginScreen extends StatefulWidget {
-  @override
+
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final FirebaseAuth auth = FirebaseAuth.instance;
-  final GoogleSignIn googleSignIn = new GoogleSignIn();
-  bool isGoogleSignIn = false;
-  String errorMessage = '';
-  String successMessage = '';
-  final GlobalKey<FormState> _formStateKey = GlobalKey<FormState>();
-  String _emailId;
-  String _password;
-  final _emailIdController = TextEditingController(text: '');
-  final _passwordController = TextEditingController(text: '');
 
-  @override
+  String email;
+  String password;
+
+  TextEditingController emailTEC = TextEditingController();
+  TextEditingController passwordTEC = TextEditingController();
+
+  final formKey = GlobalKey<FormState>();
+
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+        body: Form(
+          key: formKey,
           child: Container(
-            height: double.infinity,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.teal[600],
-                  Colors.teal[700],
-                  Colors.teal[800],
-                  Colors.teal[900],
-                ],
-                stops: [0.1, 0.4, 0.7, 0.9],
-              ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Column(
-                      children: <Widget>[
-                        Form(
-                          key: _formStateKey,
-                          autovalidate: true,
-                          child: Column(
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                                child: TextFormField(
-                                  validator: validateEmail,
-                                  onSaved: (value) {
-                                    _emailId = value;
-                                  },
-                                  keyboardType: TextInputType.emailAddress,
-                                  controller: _emailIdController,
-                                  decoration: InputDecoration(
-                                    focusedBorder: new UnderlineInputBorder(
-                                      borderSide: new BorderSide(
-                                          color: Colors.green,
-                                          width: 2,
-                                          style: BorderStyle.solid),
-                                    ),
-                                    labelText: "Email",
-                                    icon: Icon(
-                                      Icons.email,
-                                      color: Colors.green,
-                                    ),
-                                    fillColor: Colors.white,
-                                    labelStyle: TextStyle(
-                                      color: Colors.green,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding:
-                                EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                                child: TextFormField(
-                                  validator: validatePassword,
-                                  onSaved: (value) {
-                                    _password = value;
-                                  },
-                                  controller: _passwordController,
-                                  obscureText: true,
-                                  decoration: InputDecoration(
-                                    focusedBorder: new UnderlineInputBorder(
-                                        borderSide: new BorderSide(
-                                            color: Colors.green,
-                                            width: 2,
-                                            style: BorderStyle.solid)),
-                                    labelText: "Contraseña",
-                                    icon: Icon(
-                                      Icons.lock,
-                                      color: Colors.green,
-                                    ),
-                                    fillColor: Colors.white,
-                                    labelStyle: TextStyle(
-                                      color: Colors.green,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        (errorMessage != ''
-                            ? Text(
-                          errorMessage,
-                          style: TextStyle(color: Colors.red),
-                        )
-                            : Container()),
-                        // ignore: deprecated_member_use
-                        ButtonTheme.bar(
-                          child: ButtonBar(
-                            children: <Widget>[
-                              FlatButton(
-                                child: Text(
-                                  'Entrar',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.green,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  if (_formStateKey.currentState.validate()) {
-                                    _formStateKey.currentState.save();
-                                    signIn(_emailId, _password).then((user) {
-                                      if (user != null) {
-                                        print('Conexión satisfactoria');
-                                        setState(() {
-                                          successMessage =
-                                          'Conexión establecida.\n';
-                                        });
-                                      } else {
-                                        print('Ha surgido un error');
-                                      }
-                                    });
-                                  }
-                                },
-                              ),
-                              FlatButton(
-                                child: Text(
-                                  'Crear cuenta',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.green,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    new MaterialPageRoute(
-                                      builder: (context) => RegistrationPage(),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+              height: double.infinity,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.teal[600],
+                    Colors.teal[700],
+                    Colors.teal[800],
+                    Colors.teal[900],
+                  ],
+                  stops: [0.1, 0.4, 0.7, 0.9],
                 ),
-                (successMessage != ''
-                    ? Text(
-                  successMessage,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18, color: Colors.green),
-                )
-                    : Container()),
-                (!isGoogleSignIn
-                    ? RaisedButton(
-                  child: Text('Entrar con Google'),
-                  onPressed: () {
-                    googleSignin(context).then((user) {
-                      if (user != null) {
-                        print('Conectado correctamente');
-                        setState(() {
-                          isGoogleSignIn = true;
-                          successMessage =
-                          'Conectado correctamente.\nEmail : ${user.email}\n ';
-                        });
-                      } else {
-                        print('Ha surgido un error en la autentificación');
-                      }
-                    });
-                  },
-                ): RaisedButton(
-                  child: Text('Google Logout'),
-                  onPressed: () {
-                    googleSignout().then((response) {
-                      if (response) {
-                        setState(() {
-                          isGoogleSignIn = false;
-                          successMessage = '';
-                        });
-                      }
-                    });
-                  },
-                )),
-              ],
-            ),
-          )),
+              ),
+              child: SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 100
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column (
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text (
+                          'Accede a tu cuenta',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'OpenSans',
+                            fontSize: 30.0,
+                            fontWeight: FontWeight.bold,),),
+                        SizedBox (height: 30,),
+                        Column (
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text('Email', style: LabelStyle,),
+                              SizedBox(height: 10,),
+                              Container (
+                                alignment: Alignment.centerLeft,
+                                decoration: BoxDecorationStyle,
+                                height: 60.0,
+                                child: TextFormField(
+                                  validator: (value){
+                                    if (value.isEmpty) {
+                                      return 'No dejes este campo vacío';
+                                    }
+                                  },
+                                  controller: emailTEC,
+                                  onSaved: (value) => email = value,
+                                  keyboardType: TextInputType.emailAddress,
+                                  style: TextStyle (
+                                    color: Colors.white,
+                                    fontFamily: 'OpenSans',),
+                                  decoration: InputDecoration (
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.only(top: 14.0),
+                                      prefixIcon: Icon (Icons.email, color: Colors.white),
+                                      hintText: "Debes ingresar un correo electrónico",
+                                      hintStyle: HintTextStyle),),),]),
+                        SizedBox (height: 30,),
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text('Contraseña',
+                                style: LabelStyle,),
+                              SizedBox(height: 10),
+                              Container (
+                                alignment: Alignment.centerLeft,
+                                decoration: BoxDecorationStyle,
+                                height: 60,
+                                child: TextFormField (
+                                  validator: (value){
+                                    if (value.isEmpty) {
+                                      return 'El campo contraseña no puede estar vacío';
+                                    }
+                                  },
+                                  controller: passwordTEC,
+                                  onSaved: (value) => password = value,
+                                  obscureText: true,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'OpenSans',),
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.only(top: 14.0),
+                                    prefixIcon: Icon(
+                                      Icons.lock,
+                                      color: Colors.white,),
+                                    hintText: 'Ingresa tu contraseña de inicio',
+                                    hintStyle: HintTextStyle,),),),]),
+                        Container (
+                          alignment: Alignment.centerRight,
+                          child: FlatButton(
+                            onPressed: () {},
+                            padding: EdgeInsets.only(right: 0.0),
+                            child: Text ('¿Has olvidado la contraseña?',
+                              style: LabelStyle,),),),
+                        SizedBox (height: 20,),
+                        SizedBox(height: 90,),
+                        Container (
+                          padding: EdgeInsets.symmetric(vertical: 25),
+                          width: double.infinity,
+                          child: RaisedButton(
+                            elevation: 5,
+                            padding: EdgeInsets.all(15),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30)),
+                            color: Colors.white,
+                            child: Text ("Entrar",
+                              style: TextStyle (
+                                color: Colors.teal,
+                                letterSpacing: 1.5,
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'OpenSans',),),
+                            onPressed: () async{
+                              if (!formKey.currentState.validate()){
+                                Scaffold.of(context).showSnackBar(
+                                    SnackBar(content: Text('Procesando datos'))
+                                );} else {
+                                FirebaseUser usuario;
+                                try {
+                                  usuario = (await _auth.signInWithEmailAndPassword(
+                                      email: emailTEC.text, password: passwordTEC.text)) as FirebaseUser;
+                                  print(email);
+                                  print(password);
+                                } catch (e) {
+                                  print (e.toString());
+                                } finally {
+                                  if (usuario != null) {
+                                  } else {
+                                    print('sign in Not');
+                                  }
+                                }
+                              }},),),
+                        SizedBox(height: 30,),
+                        Container (
+                          alignment: Alignment.bottomCenter,
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text ('¿No tienes aún cuenta? ',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.w400,),),
+                                FlatButton (
+                                  child: Text (" Crea una",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,),),
+                                  onPressed: () {
+                                    setState(() {
+                                     Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => Crearcuenta()),);
+                                    });
+                                  },
+                                )
+                              ]),
+                        ),
+                      ]),
+                ),
+              )
+          ),
+        )
     );
   }
 
-  Future<FirebaseUser> signIn(String email, String password) async {
-    try {
-      FirebaseUser user = (await auth.signInWithEmailAndPassword(
-          email: email, password: password)) as FirebaseUser;
+  final HintTextStyle = TextStyle(
+      color: Colors.white54,
+      fontFamily: 'OpenSans',
+      fontSize: 16
+  );
 
-      assert(user != null);
-      assert(await user.getIdToken() != null);
+  final LabelStyle = TextStyle(
+      color: Colors.white,
+      fontWeight: FontWeight.bold,
+      fontFamily: 'OpenSans',
+      fontSize: 16
+  );
 
-      final FirebaseUser currentUser = await auth.currentUser();
-      assert(user.uid == currentUser.uid);
-      return user;
-    } catch (e) {
-      handleError(e);
-      return null;
-    }
-  }
-
-  Future<FirebaseUser> googleSignin(BuildContext context) async {
-    FirebaseUser currentUser;
-    try {
-      final GoogleSignInAccount googleUser = await googleSignIn.signIn();
-      final GoogleSignInAuthentication googleAuth =
-      await googleUser.authentication;
-      final AuthCredential credential = GoogleAuthProvider.getCredential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      final FirebaseUser user = (await auth.signInWithCredential(credential)) as FirebaseUser;
-      assert(user.email != null);
-      assert(user.displayName != null);
-      assert(!user.isAnonymous);
-      assert(await user.getIdToken() != null);
-
-      currentUser = await auth.currentUser();
-      assert(user.uid == currentUser.uid);
-      print(currentUser);
-      print("Nombre de usuario : ${currentUser.displayName}");
-    } catch (e) {
-      handleError(e);
-    }
-    return currentUser;
-  }
-
-  Future<bool> googleSignout() async {
-    await auth.signOut();
-    await googleSignIn.signOut();
-    return true;
-  }
-
-  handleError(PlatformException error) {
-    print(error);
-    switch (error.code) {
-      case 'ERROR_USER_NOT_FOUND':
-        setState(() {
-          errorMessage = 'Usuario no registrado!!!';
-        });
-        break;
-      case 'ERROR_WRONG_PASSWORD':
-        setState(() {
-          errorMessage = 'Contraseña erronea!!!';
-        });
-        break;
-    }
-  }
-
-  String validateEmail(String value) {
-    Pattern pattern =
-        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-    RegExp regex = new RegExp(pattern);
-    if (value.isEmpty || !regex.hasMatch(value))
-      return 'Introduce un correo válido!!!';
-    else
-      return null;
-  }
-
-  String validatePassword(String value) {
-    if (value.trim().isEmpty) {
-      return 'Debes introducir tu contraseña!!!';
-    }
-    return null;
-  }
+  final BoxDecorationStyle = BoxDecoration(
+    color: Colors.teal[900],
+    borderRadius: BorderRadius.circular(10.0),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black12,
+        blurRadius: 6.0,
+        offset: Offset(0, 2),
+      ),
+    ],
+  );
 }
+
+
