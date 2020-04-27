@@ -4,7 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:miagendapersonal/login.dart';
+import 'package:path_provider/path_provider.dart';
+import 'login.dart';
 
 const String kTestString = 'Hello world!';
 
@@ -14,16 +15,14 @@ void main() async {
   final FirebaseApp app = await FirebaseApp.configure(
     name: 'test',
     options: FirebaseOptions(
-      googleAppID: (Platform.isIOS || Platform.isMacOS)
-          ? '1:159623150305:ios:4a213ef3dbd8997b'
-          : '1:159623150305:android:ef48439a0cc0263d',
-      gcmSenderID: '159623150305',
-      apiKey: 'AIzaSyChk3KEG7QYrs4kQPLP1tjJNxBTbfCAdgg',
-      projectID: 'flutter-firebase-plugins',
+      googleAppID: '1:276780238123:android:da7e8578fdec5418aeb16e',
+      gcmSenderID: '276780238123',
+      apiKey: "AIzaSyCgUCNAJY1PDBDHt6GVcMv-60S_g2S6ByY",
+      projectID: 'agenda-personal-904bf',
     ),
   );
   final FirebaseStorage storage = FirebaseStorage(
-      app: app, storageBucket: 'gs://flutter-firebase-plugins.appspot.com');
+      app: app, storageBucket: 'agenda-personal-904bf.appspot.com');
   runApp(copiasdeseguridad(storage: storage));
 }
 
@@ -31,29 +30,30 @@ class copiasdeseguridad extends StatelessWidget {
   copiasdeseguridad({this.storage});
   final FirebaseStorage storage;
 
-  @override
+
+
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Storage Example',
-      home: MyHomePage(storage: storage),
+      home: CSeguridad(storage: storage),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({this.storage});
+class CSeguridad extends StatefulWidget {
+  CSeguridad({this.storage, uid});
   final FirebaseStorage storage;
 
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
+
+  _CSeguridadState createState() => _CSeguridadState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _CSeguridadState extends State<CSeguridad> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   List<StorageUploadTask> _tasks = <StorageUploadTask>[];
 
   Future<void> _uploadFile() async {
-    final String uuid = Uuid().v1();
+    final String uuid = uid().v1();
     final Directory systemTempDir = Directory.systemTemp;
     final File file = await File('${systemTempDir.path}/foo$uuid.txt').create();
     await file.writeAsString(kTestString);
@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _downloadFile(StorageReference ref) async {
     final String url = await ref.getDownloadURL();
-    final String uuid = Uuid().v1();
+    final String uuid = uid().v1();
     final http.Response downloadData = await http.get(url);
     final Directory systemTempDir = Directory.systemTemp;
     final File tempFile = File('${systemTempDir.path}/tmp$uuid.txt');

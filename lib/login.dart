@@ -5,8 +5,12 @@ import 'package:miagendapersonal/crearcuenta.dart';
 import 'package:miagendapersonal/copiasdeseguridad.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
-
+var name;
+var uid;
 class LoginScreen extends StatefulWidget {
+
+  var Name;
+  var Uid;
 
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -70,6 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 decoration: BoxDecorationStyle,
                                 height: 60.0,
                                 child: TextFormField(
+                                  // ignore: missing_return
                                   validator: (value){
                                     if (value.isEmpty) {
                                       return 'No dejes este campo vacío';
@@ -153,6 +158,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 try {
                                   usuario = (await _auth.signInWithEmailAndPassword(
                                       email: emailTEC.text, password: passwordTEC.text)).user;
+                                  name = usuario.email;
+                                  uid = usuario.uid;
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context) => copiasdeseguridad()),);
