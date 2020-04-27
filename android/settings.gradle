@@ -1,15 +1,14 @@
-include ':app'
+// Copyright (c) 2013, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
 
-def flutterProjectRoot = rootProject.projectDir.parentFile.toPath()
+// @dart = 2.6
 
-def plugins = new Properties()
-def pluginsFile = new File(flutterProjectRoot.toFile(), '.flutter-plugins')
-if (pluginsFile.exists()) {
-    pluginsFile.withReader('UTF-8') { reader -> plugins.load(reader) }
-}
+dart._internal;
 
-plugins.each { name, path ->
-    def pluginDirectory = flutterProjectRoot.resolve(path).resolve('android').toFile()
-    include ":$name"
-    project(":$name").projectDir = pluginDirectory
-}
+/**
+ * Implementation of [core.Symbol].  This class uses the same name as
+ * a core class so a user can't tell the difference.
+ *
+ * The purpose of this class is to hide [_name] from user code, but
+ * make it accessible to Dart platform code*/

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:miagendapersonal/crearcuenta.dart';
+import 'package:miagendapersonal/copiasdeseguridad.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -98,6 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 decoration: BoxDecorationStyle,
                                 height: 60,
                                 child: TextFormField (
+                                  // ignore: missing_return
                                   validator: (value){
                                     if (value.isEmpty) {
                                       return 'El campo contraseña no puede estar vacío';
@@ -150,9 +152,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 FirebaseUser usuario;
                                 try {
                                   usuario = (await _auth.signInWithEmailAndPassword(
-                                      email: emailTEC.text, password: passwordTEC.text)) as FirebaseUser;
-                                  print(email);
-                                  print(password);
+                                      email: emailTEC.text, password: passwordTEC.text)).user;
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => copiasdeseguridad()),);
                                 } catch (e) {
                                   print (e.toString());
                                 } finally {
